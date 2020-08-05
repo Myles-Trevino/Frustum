@@ -1,0 +1,25 @@
+/*
+	Copyright 2020 Myles Trevino
+	Licensed under the Apache License, Version 2.0
+	https://www.apache.org/licenses/LICENSE-2.0
+*/
+
+
+#version 330 core
+
+layout (location = 0) in vec3 input_vertex;
+
+uniform vec3 offset;
+uniform mat4 view_matrix;
+uniform mat4 projection_matrix;
+uniform mat4 light_space_matrix;
+
+out vec4 fragment_position_light_space;
+
+
+void main()
+{
+	vec3 position = input_vertex+offset;
+	fragment_position_light_space = light_space_matrix*vec4(position, 1.f);
+	gl_Position = projection_matrix*view_matrix*vec4(position, 1.f);
+}

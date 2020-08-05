@@ -1,0 +1,61 @@
+/*
+	Copyright 2020 Myles Trevino
+	Licensed under the Apache License, Version 2.0
+	https://www.apache.org/licenses/LICENSE-2.0
+*/
+
+
+#version 330 core
+
+in vec3 fragment_position;
+in vec3 fragment_normal;
+in vec4 fragment_position_light_space;
+
+uniform vec3 light_direction;
+uniform vec3 color;
+uniform sampler2D shadow_map;
+
+out vec4 output_color;
+
+
+float calculate_shadow()
+{
+	vec3 projection = (fragment_position_light_space.xyz/
+		fragment_position_light_space.w)*.5f+.5f;
+
+	float current_depth = projection.z;
+	const float bias = .0005f;
+	vec2 texel_size = 1.f/textureSize(shadow_map, 0);
+	float shadow = 0.f;
+
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+			float depth = texture(shadow_map, projection.xy+vec2(x, y)*texel_size).r;
+			shadow += current_depth-bias > depth ? 0.f : 1.f;
+		}
+	}
+
+	return shadow/9.f;
+}
+
+
+void main()
+{
+	const vec3 light_color = vec3(1.f, 1.f, 1.f);
+	const vec3 ambient = vec3(.01f, .01f, .01f);
+	const float gamma = 2.2f;
+
+	// Diffuse.map_shader
+	vec3 normal = normalize(fragment_normal);
+	float diffuse_strength = max(dot(normal, light_direction), 0.f);
+	vec3 diffuse = diffuse_strength*light_color;
+
+	// Result.
+	vec3 result = (ambient+(calculate_shadow()+.01f)*diffuse)*color;
+	output_color = vec4(result, 1.f);
+
+	// Gamma correction;
+	output_color.rgb = pow(output_color.rgb, vec3(1.f/gamma));
+}
