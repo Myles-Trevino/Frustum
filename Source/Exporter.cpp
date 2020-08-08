@@ -27,14 +27,14 @@ namespace
 	LV::Mesh terrain_mesh;
 	LV::Mesh buildings_mesh;
 	LV::Mesh base_mesh;
-	aiScene scene;
+	aiScene* scene;
 
 
 	void populate_scene_mesh(unsigned scene_mesh_index, const std::string& mesh_name,
 		const LV::Mesh& frustum_mesh, bool has_normals)
 	{
 		// Populate the vertices.
-		aiMesh* mesh{scene.mMeshes[scene_mesh_index]};
+		aiMesh* mesh{scene->mMeshes[scene_mesh_index]};
 
 		mesh->mName = mesh_name;
 
@@ -76,28 +76,29 @@ namespace
 	{
 		std::cout<<"Generating the export data...\n";
 
-		// Create the root node.
-		scene.mRootNode = new aiNode();
+		// Create the scene and root node.
+		scene = new aiScene();
+		scene->mRootNode = new aiNode();
 
 		// Create the material.
-		scene.mNumMaterials = 1;
-		scene.mMaterials = new aiMaterial*[scene.mNumMaterials];
-		scene.mMaterials[0] = new aiMaterial;
+		scene->mNumMaterials = 1;
+		scene->mMaterials = new aiMaterial*[scene->mNumMaterials];
+		scene->mMaterials[0] = new aiMaterial;
 
-		scene.mMaterials[0]->AddProperty(new aiString{
+		scene->mMaterials[0]->AddProperty(new aiString{
 			LV::Constants::material_name}, AI_MATKEY_NAME);
 
 		const glm::fvec3 color{LV::Constants::material_color};
-		scene.mMaterials[0]->AddProperty(new aiColor3D{
+		scene->mMaterials[0]->AddProperty(new aiColor3D{
 			color.x, color.y, color.z}, 1, AI_MATKEY_COLOR_DIFFUSE);
 
 		// Create the meshes.
-		scene.mNumMeshes = 3;
-		scene.mMeshes = new aiMesh*[scene.mNumMeshes];
-		for(unsigned index{}; index < scene.mNumMeshes; ++index)
+		scene->mNumMeshes = 3;
+		scene->mMeshes = new aiMesh*[scene->mNumMeshes];
+		for(unsigned index{}; index < scene->mNumMeshes; ++index)
 		{
-			scene.mMeshes[index] = new aiMesh;
-			scene.mMeshes[index]->mMaterialIndex = 0;
+			scene->mMeshes[index] = new aiMesh;
+			scene->mMeshes[index]->mMaterialIndex = 0;
 
 			if(index == 0) populate_scene_mesh(index, "Terrain", terrain_mesh, true);
 			else if(index == 1) populate_scene_mesh(index, "Base", base_mesh, false);
@@ -105,10 +106,10 @@ namespace
 		}
 
 		// Link the meshes to the root node.
-		scene.mRootNode->mNumMeshes = scene.mNumMeshes;
-		scene.mRootNode->mMeshes = new unsigned int[scene.mRootNode->mNumMeshes];
-		for(unsigned index{}; index < scene.mRootNode->mNumMeshes; ++index)
-			scene.mRootNode->mMeshes[index] = index;
+		scene->mRootNode->mNumMeshes = scene->mNumMeshes;
+		scene->mRootNode->mMeshes = new unsigned int[scene->mRootNode->mNumMeshes];
+		for(unsigned index{}; index < scene->mRootNode->mNumMeshes; ++index)
+			scene->mRootNode->mMeshes[index] = index;
 	}
 
 	
@@ -118,7 +119,7 @@ namespace
 		std::filesystem::create_directory("Exports");
 
 		Assimp::Exporter exporter;
-		if(exporter.Export(&scene, format, "Exports/"+name+"."+format) != AI_SUCCESS)
+		if(exporter.Export(scene, format, "Exports/"+name+"."+format) != AI_SUCCESS)
 			throw std::runtime_error{"Export failed."};
 	}
 }
@@ -152,4 +153,7 @@ void LV::Exporter::export_frustum(const std::string& name,
 	// Export the Assimp scene as the given format.
 	export_scene();
 	std::cout<<"Export finished.\n";
+
+	// Destroy the scene.
+	delete scene;
 }
