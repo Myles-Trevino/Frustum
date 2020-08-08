@@ -8,7 +8,7 @@
 #include "Camera.hpp"
 
 #include <GLFW/glfw3.h>
-#include <GLM/gtx/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "Constants.hpp"
 #include "Window.hpp"

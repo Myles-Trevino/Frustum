@@ -8,23 +8,13 @@
 #include "Request.hpp"
 
 #include <stdexcept>
-#include <cURL/curl.h>
+#include <curl/curl.h>
 
 #include "Constants.hpp"
 
 
 namespace
 {
-	size_t read_callback(void* buffer, size_t element_size,
-		size_t element_count, std::string* string)
-	{
-		const size_t max_size{element_size*element_count};
-		const size_t size{max_size > string->size()+1 ? string->size()+1 : max_size};
-		std::memcpy(buffer, string->data(), size);
-		return size;
-	}
-
-
 	size_t write_callback(void* buffer, size_t element_size,
 		size_t element_count, std::string* string)
 	{

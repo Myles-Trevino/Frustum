@@ -9,9 +9,9 @@
 
 #include <string>
 #include <vector>
-#include <GLObjects/globjects.h>
-#include <GLObjects/base/File.h>
-#include <GLM/glm.hpp>
+#include <globjects/globjects.h>
+#include <globjects/base/File.h>
+#include <glm/glm.hpp>
 
 
 namespace LV
@@ -37,7 +37,7 @@ namespace LV
 namespace LV::Utilities
 {
 	// Platform-specific.
-	void windows_initialization();
+	void platform_initialization(const std::string& path);
 
 	// OpenGL.
 	Shader create_shader(const std::string& name);

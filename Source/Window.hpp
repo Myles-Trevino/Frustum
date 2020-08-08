@@ -8,7 +8,7 @@
 #pragma once
 
 #include <string>
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 
 
 namespace LV::Window

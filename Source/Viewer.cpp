@@ -9,8 +9,8 @@
 
 #include <iostream>
 #include <GLFW/glfw3.h>
-#include <GLBinding/gl33core/gl.h>
-#include <GLM/gtx/rotate_vector.hpp>
+#include <glbinding/gl33core/gl.h>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include "Window.hpp"
 #include "Camera.hpp"

@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <regex>
-#include <cURL/curl.h>
+#include <curl/curl.h>
 
 #include "Constants.hpp"
 #include "Utilities.hpp"
@@ -71,10 +71,10 @@ void validate_name(const std::string& name)
 }
 
 
-int main()
+int main(int arguments_count, const char* arguments[])
 {
 	// Initialize.
-	LV::Utilities::windows_initialization();
+	LV::Utilities::platform_initialization(arguments[0]);
 	curl_global_init(CURL_GLOBAL_ALL);
 	print_startup_message();
 

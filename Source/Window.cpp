@@ -8,10 +8,10 @@
 #include "Window.hpp"
 
 #include <GLFW/glfw3.h>
-#include <GLBinding/gl33core/gl.h>
-#include <GLObjects/globjects.h>
+#include <glbinding/gl33core/gl.h>
+#include <globjects/globjects.h>
 #define STB_IMAGE_IMPLEMENTATION
-#include <STB Image/stb_image.h>
+#include <stb_image/stb_image.h>
 
 #include "Constants.hpp"
 

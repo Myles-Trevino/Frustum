@@ -11,10 +11,10 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
-#include <GLM/gtc/reciprocal.hpp>
-#include <GLM/gtx/transform.hpp>
-#include <NLohmann/json.hpp>
-#include <Earcut/earcut.hpp>
+#include <glm/gtc/reciprocal.hpp>
+#include <glm/gtx/transform.hpp>
+#include <nlohmann/json.hpp>
+#include <earcut/earcut.hpp>
 
 #include "Request.hpp"
 #include "Constants.hpp"

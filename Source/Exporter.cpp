@@ -9,8 +9,8 @@
 
 #include <iostream>
 #include <filesystem>
-#include <Assimp/Exporter.hpp>
-#include <Assimp/scene.h>
+#include <assimp/Exporter.hpp>
+#include <assimp/scene.h>
 
 #include "Constants.hpp"
 #include "Utilities.hpp"
@@ -137,7 +137,7 @@ void LV::Exporter::export_frustum(const std::string& name,
 	// Parse the Y-Up variable.
 	if(orientation == "z-up") z_up = true;
 	else if(orientation == "y-up") z_up = false;
-	else throw std::exception{"'orientation' must be either 'z-up' or 'y-up'."};
+	else throw std::runtime_error{"'orientation' must be either 'z-up' or 'y-up'."};
 	
 	// Load the Frustum.
 	LV::Frustum::load(name);

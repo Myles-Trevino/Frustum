@@ -9,7 +9,7 @@
 
 #include <string>
 #include <vector>
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 
 
 namespace LV

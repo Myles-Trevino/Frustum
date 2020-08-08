@@ -11,10 +11,12 @@
 #ifdef _WIN32
 #define NOMINMAX
 #include <Windows.h>
+#elif __APPLE__
+#include <unistd.h>
 #endif
-#include <GLBinding/gl33core/gl.h>
-#include <GLObjects/VertexAttributeBinding.h>
-#include <Zstd/zstd.h>
+#include <glbinding/gl33core/gl.h>
+#include <globjects/VertexAttributeBinding.h>
+#include <zstd.h>
 
 #include "Constants.hpp"
 
@@ -54,7 +56,7 @@ namespace
 }
 
 
-void LV::Utilities::windows_initialization()
+void LV::Utilities::platform_initialization(const std::string& path)
 {
 	#ifdef _WIN32
 	// Set the icon.
@@ -62,6 +64,11 @@ void LV::Utilities::windows_initialization()
 	HWND console_handle{GetConsoleWindow()};
 	set_icon(module_handle, console_handle, ICON_SMALL, 32);
 	set_icon(module_handle, console_handle, ICON_BIG, 64);
+	
+	#elif __APPLE__
+	// Set the working directory.
+	std::string directory{path.substr(0, path.find_last_of('/'))};
+	chdir(directory.c_str());
 	#endif
 }
 
@@ -106,7 +113,8 @@ LV::VAO LV::Utilities::create_vao(const Shader& shader,
 	vao.vao = globjects::VertexArray::create();
 	vao.vao->bindElementBuffer(vao.ibo.get());
 
-	gl::GLint stride{sizeof(glm::fvec3)*(normals ? 2 : 1)};
+	gl::GLint stride{static_cast<gl::GLint>(
+		sizeof(glm::fvec3)*(normals ? 2 : 1))};
 	bind_attribute(shader, vao, 0, "input_vertex", 0, stride, 3);
 	if(normals) bind_attribute(shader, vao, 1,
 		"input_normal", sizeof(glm::fvec3), stride, 3);
