@@ -47,7 +47,7 @@ void main()
 	const vec3 ambient = vec3(.01f, .01f, .01f);
 	const float gamma = 2.2f;
 
-	// Diffuse.map_shader
+	// Diffuse.
 	vec3 normal = normalize(fragment_normal);
 	float diffuse_strength = max(dot(normal, light_direction), 0.f);
 	vec3 diffuse = diffuse_strength*light_color;

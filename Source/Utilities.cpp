@@ -16,7 +16,7 @@
 #endif
 #include <glbinding/gl33core/gl.h>
 #include <globjects/VertexAttributeBinding.h>
-#include <zstd.h>
+#include <zstd/zstd.h>
 
 #include "Constants.hpp"
 
