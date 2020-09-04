@@ -73,53 +73,63 @@ void LV::Utilities::platform_initialization(const std::string& path)
 }
 
 
-LV::Shader LV::Utilities::create_shader(const std::string& name)
+void LV::Utilities::create_shader(Shader* shader, const std::string& name)
 {
-	Shader shader;
-
 	// Load the shader files.
-	shader.vertex_file = globjects::Shader::sourceFromFile(
+	shader->vertex_file = globjects::Shader::sourceFromFile(
 		LV::Constants::resources_directory+"/Shaders/"+name+".vertex");
 
-	shader.fragment_file = globjects::Shader::sourceFromFile(
+	shader->fragment_file = globjects::Shader::sourceFromFile(
 		LV::Constants::resources_directory+"/Shaders/"+name+".fragment");
 
 	// Create the shaders.
-	shader.vertex_shader = globjects::Shader::create(
-		gl::GL_VERTEX_SHADER, shader.vertex_file.get());
+	shader->vertex_shader = globjects::Shader::create(
+		gl::GL_VERTEX_SHADER, shader->vertex_file.get());
 
-	shader.fragment_shader = globjects::Shader::create(
-		gl::GL_FRAGMENT_SHADER, shader.fragment_file.get());
+	shader->fragment_shader = globjects::Shader::create(
+		gl::GL_FRAGMENT_SHADER, shader->fragment_file.get());
 
 	// Create the shader program.
-	shader.program = globjects::Program::create();
-	shader.program->attach(shader.vertex_shader.get(), shader.fragment_shader.get());
-
-	return shader;
+	shader->program = globjects::Program::create();
+	shader->program->attach(shader->vertex_shader.get(), shader->fragment_shader.get());
 }
 
 
-LV::VAO LV::Utilities::create_vao(const Shader& shader,
+void LV::Utilities::create_vao(VAO* vao, const Shader& shader,
 	const std::vector<glm::fvec3>& vertices,
 	const std::vector<unsigned>& indices, bool normals)
 {
-	VAO vao;
-
 	// Generate the VBO and IBO.
-	vao.vbo = create_buffer(vertices);
-	vao.ibo = create_buffer(indices);
+	vao->vbo = create_buffer(vertices);
+	vao->ibo = create_buffer(indices);
 
 	// Generate the VAO.
-	vao.vao = globjects::VertexArray::create();
-	vao.vao->bindElementBuffer(vao.ibo.get());
+	vao->vao = globjects::VertexArray::create();
+	vao->vao->bindElementBuffer(vao->ibo.get());
 
 	gl::GLint stride{static_cast<gl::GLint>(
 		sizeof(glm::fvec3)*(normals ? 2 : 1))};
-	bind_attribute(shader, vao, 0, "input_vertex", 0, stride, 3);
-	if(normals) bind_attribute(shader, vao, 1,
+	bind_attribute(shader, *vao, 0, "input_vertex", 0, stride, 3);
+	if(normals) bind_attribute(shader, *vao, 1,
 		"input_normal", sizeof(glm::fvec3), stride, 3);
+}
 
-	return vao;
+
+void LV::Utilities::destroy_shader(Shader* shader)
+{
+	shader->program.reset();
+	shader->fragment_shader.reset();
+	shader->vertex_shader.reset();
+	shader->fragment_file.reset();
+	shader->vertex_file.reset();
+}
+
+
+void LV::Utilities::destroy_vao(VAO* vao)
+{
+	vao->vao.reset();
+	vao->ibo.reset();
+	vao->vbo.reset();
 }
 
 

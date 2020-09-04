@@ -142,8 +142,9 @@ void LV::Window::update()
 
 void LV::Window::destroy()
 {
-	globjects::detachAllObjects();
+	capture_cursor(false);
 	glfwDestroyWindow(window);
+	glfwPollEvents();
 	glfwTerminate();
 }
 

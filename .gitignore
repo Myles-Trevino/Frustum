@@ -4,9 +4,11 @@ Binaries
 Include
 Intermediate
 Libraries
+Releases
 *.sln
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+*.xcodeproj
 Resources.hpp
 Resources.rc

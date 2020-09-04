@@ -225,19 +225,19 @@ void LV::Viewer::view(const std::string& name)
 
 	// Compile the shaders.
 	std::cout<<"Compiling the shaders...\n";
-	shadow_shader = LV::Utilities::create_shader("Shadow");
-	solid_shader = LV::Utilities::create_shader("Solid");
-	diffuse_shader = LV::Utilities::create_shader("Diffuse");
+	LV::Utilities::create_shader(&shadow_shader, "Shadow");
+	LV::Utilities::create_shader(&solid_shader, "Solid");
+	LV::Utilities::create_shader(&diffuse_shader, "Diffuse");
 
 	// Create the VAOs.
 	std::cout<<"Buffering the mesh data...\n";
-	terrain_vao = LV::Utilities::create_vao(diffuse_shader,
+	LV::Utilities::create_vao(&terrain_vao, diffuse_shader,
 		terrain_mesh.vertices, terrain_mesh.indices, true);
 
-	buildings_vao = LV::Utilities::create_vao(solid_shader,
+	LV::Utilities::create_vao(&buildings_vao, solid_shader,
 		buildings_mesh.vertices, buildings_mesh.indices, false);
 
-	base_vao = LV::Utilities::create_vao(diffuse_shader,
+	LV::Utilities::create_vao(&base_vao, diffuse_shader,
 		base_mesh.vertices, base_mesh.indices, false);
 
 	// Create shadow buffer and calculate lighting.
@@ -279,6 +279,17 @@ void LV::Viewer::view(const std::string& name)
 	}
 
 	// Destroy.
+	shadow_map_fbo.reset();
+	shadow_map.reset();
+	
+	Utilities::destroy_vao(&base_vao);
+	Utilities::destroy_vao(&buildings_vao);
+	Utilities::destroy_vao(&terrain_vao);
+	
+	Utilities::destroy_shader(&diffuse_shader);
+	Utilities::destroy_shader(&solid_shader);
+	Utilities::destroy_shader(&shadow_shader);
+	
 	Window::destroy();
 	std::cout<<"Viewer exited.\n";
 }

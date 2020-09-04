@@ -40,10 +40,15 @@ namespace LV::Utilities
 	void platform_initialization(const std::string& path);
 
 	// OpenGL.
-	Shader create_shader(const std::string& name);
+	void create_shader(Shader* shader, const std::string& name);
 
-	VAO create_vao(const Shader& shader, const std::vector<glm::fvec3>& vertices,
+	void create_vao(VAO* vao, const Shader& shader,
+		const std::vector<glm::fvec3>& vertices,
 		const std::vector<unsigned>& indices, bool normals);
+
+	void destroy_shader(Shader* shader);
+	void destroy_vao(VAO* vao);
+
 
 	// Compression.
 	std::vector<uint8_t> compress(const std::string& source);

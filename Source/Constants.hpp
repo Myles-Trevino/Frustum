@@ -16,7 +16,7 @@ namespace LV::Constants
 {
 	// General.
 	const std::string program_name{"Laventh Frustum"};
-	const std::string program_version{"2020-8-5"};
+	const std::string program_version{"2020-9-4"};
 	const std::string resources_directory{"Resources"};
 	constexpr bool opengl_logging{false};
 	constexpr bool curl_verbose{false};
