@@ -119,7 +119,7 @@ int main(int arguments_count, const char* arguments[])
 
 			else if(command_name == "exit")
 			{
-				std::cout<<"Exiting...\n";	
+				std::cout<<"Exiting...\n";
 				break;
 			}
 

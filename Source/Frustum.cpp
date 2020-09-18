@@ -97,11 +97,11 @@ namespace
 
 		// Make the request (OpenTopography API).
 		std::stringstream coordinates;
-		coordinates<<"&west="<<bounds.left<<"&south="<<bounds.bottom<<
-			"&east="<<bounds.right<<"&north="<<bounds.top;
+		coordinates<<"&south="<<bounds.bottom<<"&north="<<bounds.top
+			<<"&west="<<bounds.left<<"&east="<<bounds.right;
 
-		std::string response{LV::Request::request("https://portal.opentopography.org/otr/"
-			"getdem?demtype="+dataset+coordinates.str()+"&outputFormat=AAIGrid")};
+		std::string response{LV::Request::request("https://portal.opentopography.org/API/"
+			"globaldem?demtype="+dataset+coordinates.str()+"&outputFormat=AAIGrid")};
 		std::stringstream response_stream{response};
 
 		if(response.find("Error") != std::string::npos) throw std::runtime_error{
