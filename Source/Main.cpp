@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -46,7 +46,7 @@ void print_documentation()
 void print_startup_message()
 {
 	std::cout<<LV::Constants::program_name<<" "<<LV::Constants::program_version
-		<<"\nCopyright 2020 Myles Trevino"
+		<<"\nCopyright Myles Trevino"
 		<<"\nlaventh.com"
 
 		<<"\n\nLicensed under the Apache License, Version 2.0"
