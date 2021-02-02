@@ -112,7 +112,7 @@ namespace
 			scene->mRootNode->mMeshes[index] = index;
 	}
 
-	
+
 	void export_scene()
 	{
 		std::cout<<"Exporting...\n";
@@ -139,7 +139,7 @@ void LV::Exporter::export_frustum(const std::string& name,
 	if(orientation == "z-up") z_up = true;
 	else if(orientation == "y-up") z_up = false;
 	else throw std::runtime_error{"'orientation' must be either 'z-up' or 'y-up'."};
-	
+
 	// Load the Frustum.
 	LV::Frustum::load(name);
 	frustum_size = LV::Frustum::get_size();

@@ -36,9 +36,9 @@ void print_documentation()
 		"can be either 'z-up' or 'y-up'. For example: 'export st-gallen stl z-up'. Exported "
 		"models will be saved within the 'Exports' folder. STL is not recommended for large "
 		"exports. Exporting as OBJ will generate a corresponding MTL file."
-		
+
 		<<"\n\nTo exit, enter 'exit'."
-		
+
 		<<"\n\nFor detailed documentation, visit laventh.com.\n";
 }
 

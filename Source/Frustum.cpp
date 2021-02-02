@@ -100,8 +100,9 @@ namespace
 		coordinates<<"&south="<<bounds.bottom<<"&north="<<bounds.top
 			<<"&west="<<bounds.left<<"&east="<<bounds.right;
 
-		std::string response{LV::Request::request("https://portal.opentopography.org/API/"
-			"globaldem?demtype="+dataset+coordinates.str()+"&outputFormat=AAIGrid")};
+		std::string request{"https://portal.opentopography.org/API/globaldem?demtype="+
+			LV::Utilities::to_uppercase(dataset)+coordinates.str()+"&outputFormat=AAIGrid"};
+		std::string response{LV::Request::request(request)};
 		std::stringstream response_stream{response};
 
 		if(response.find("Error") != std::string::npos) throw std::runtime_error{
@@ -272,7 +273,7 @@ namespace
 				else if(levels != tags.value().end())
 					building.height = LV::Constants::building_level_height*
 						std::stof(levels.value().get<std::string>());
-					
+
 				else building.height = LV::Constants::default_building_height;
 
 				building.height /= LV::Constants::meters_per_frustum_base_unit;

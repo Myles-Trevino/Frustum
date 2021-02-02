@@ -63,4 +63,6 @@ namespace LV::Utilities
 		const std::vector<std::string>& supported_options);
 
 	std::vector<std::string> split(const std::string& string);
+
+	std::string to_uppercase(std::string string);
 }
