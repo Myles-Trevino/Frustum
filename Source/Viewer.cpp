@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -88,7 +88,7 @@ namespace
 
 			light_rotation = glm::clamp(light_rotation,
 				-light_rotation_limit, light_rotation_limit);
-				
+
 			// Clamp the rotation to a radius.
 			float distance{glm::distance(light_rotation, glm::fvec2{0.f, 0.f})};
 			if(distance > light_rotation_limit)
@@ -107,7 +107,7 @@ namespace
 		shadow_map->image2D(0, gl::GL_DEPTH_COMPONENT16,
 			glm::ivec2{LV::Constants::shadow_resolution},
 			0, gl::GL_DEPTH_COMPONENT, gl::GL_FLOAT, nullptr);
-		
+
 		// Generate the shadow map framebuffer object.
 		shadow_map_fbo = globjects::Framebuffer::create();
 		shadow_map_fbo->bind();
@@ -175,7 +175,7 @@ namespace
 		render_mesh(terrain_vao, terrain_mesh);
 		render_mesh(base_vao, terrain_mesh);
 		render_mesh(buildings_vao, buildings_mesh, false);
-		
+
 		// Return the framebuffer to defaults.
 		globjects::Framebuffer::defaultFBO()->bind();
 		glm::ivec2 window_size{LV::Window::get_size()};
@@ -281,15 +281,15 @@ void LV::Viewer::view(const std::string& name)
 	// Destroy.
 	shadow_map_fbo.reset();
 	shadow_map.reset();
-	
+
 	Utilities::destroy_vao(&base_vao);
 	Utilities::destroy_vao(&buildings_vao);
 	Utilities::destroy_vao(&terrain_vao);
-	
+
 	Utilities::destroy_shader(&diffuse_shader);
 	Utilities::destroy_shader(&solid_shader);
 	Utilities::destroy_shader(&shadow_shader);
-	
+
 	Window::destroy();
 	std::cout<<"Viewer exited.\n";
 }

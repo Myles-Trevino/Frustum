@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -63,4 +63,6 @@ namespace LV::Utilities
 		const std::vector<std::string>& supported_options);
 
 	std::vector<std::string> split(const std::string& string);
+
+	std::string to_uppercase(std::string string);
 }

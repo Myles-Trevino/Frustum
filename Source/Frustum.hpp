@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -24,8 +24,8 @@ namespace LV
 
 namespace LV::Frustum
 {
-	void generate(const std::string& name, const std::string& dataset,
-		float top, float left, float bottom, float right);
+	void generate(const std::string& name, const std::string& dataset, float top,
+		float left, float bottom, float right, const std::string& api_key);
 
 	void load(const std::string& name);
 

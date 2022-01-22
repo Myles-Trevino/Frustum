@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -87,7 +87,7 @@ namespace
 	}
 
 
-	void retrieve_terrain_data()
+	void retrieve_terrain_data(const std::string& api_key)
 	{
 		std::cout<<"Retrieving the topography data...\n";
 
@@ -97,11 +97,13 @@ namespace
 
 		// Make the request (OpenTopography API).
 		std::stringstream coordinates;
-		coordinates<<"&west="<<bounds.left<<"&south="<<bounds.bottom<<
-			"&east="<<bounds.right<<"&north="<<bounds.top;
+		coordinates<<"&south="<<bounds.bottom<<"&north="<<bounds.top
+			<<"&west="<<bounds.left<<"&east="<<bounds.right;
 
-		std::string response{LV::Request::request("https://portal.opentopography.org/otr/"
-			"getdem?demtype="+dataset+coordinates.str()+"&outputFormat=AAIGrid")};
+		std::string request{"https://portal.opentopography.org/API/globaldem?demtype="+
+			LV::Utilities::to_uppercase(dataset)+coordinates.str()+
+			"&outputFormat=AAIGrid&API_Key="+api_key};
+		std::string response{LV::Request::request(request)};
 		std::stringstream response_stream{response};
 
 		if(response.find("Error") != std::string::npos) throw std::runtime_error{
@@ -272,7 +274,7 @@ namespace
 				else if(levels != tags.value().end())
 					building.height = LV::Constants::building_level_height*
 						std::stof(levels.value().get<std::string>());
-					
+
 				else building.height = LV::Constants::default_building_height;
 
 				building.height /= LV::Constants::meters_per_frustum_base_unit;
@@ -508,7 +510,7 @@ void validate_coordinate(const std::string& direction, float coordinate, float m
 
 
 void LV::Frustum::generate(const std::string& name, const std::string& dataset,
-	float top, float left, float bottom, float right)
+	float top, float left, float bottom, float right, const std::string& api_key)
 {
 	::name = name;
 	::dataset = dataset;
@@ -529,7 +531,7 @@ void LV::Frustum::generate(const std::string& name, const std::string& dataset,
 	bounds = get_compensated_bounds(Bounds{top, left, bottom, right});
 
 	// Retrieve the data.
-	retrieve_terrain_data();
+	retrieve_terrain_data(api_key);
 	retrieve_buildings_data();
 
 	// Save the Frustum data.

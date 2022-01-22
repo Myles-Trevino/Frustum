@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -44,7 +44,7 @@ std::string LV::Request::request(const std::string& url, const std::string& payl
 	curl_easy_setopt(curl_handle, CURLOPT_CAINFO,
 		(LV::Constants::resources_directory+"/Certificates.pem").c_str());
 	curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, true);
-		
+
 	if(!payload.empty()) curl_easy_setopt(curl_handle,
 		CURLOPT_POSTFIELDS, payload.c_str());
 

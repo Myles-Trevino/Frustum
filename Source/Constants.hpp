@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -16,7 +16,7 @@ namespace LV::Constants
 {
 	// General.
 	const std::string program_name{"Laventh Frustum"};
-	const std::string program_version{"2020-9-4"};
+	const std::string program_version{"2022-1-21"};
 	const std::string resources_directory{"Resources"};
 	constexpr bool opengl_logging{false};
 	constexpr bool curl_verbose{false};

@@ -1,10 +1,11 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
 
 
+#include <fstream>
 #include <iostream>
 #include <regex>
 #include <curl/curl.h>
@@ -36,9 +37,9 @@ void print_documentation()
 		"can be either 'z-up' or 'y-up'. For example: 'export st-gallen stl z-up'. Exported "
 		"models will be saved within the 'Exports' folder. STL is not recommended for large "
 		"exports. Exporting as OBJ will generate a corresponding MTL file."
-		
+
 		<<"\n\nTo exit, enter 'exit'."
-		
+
 		<<"\n\nFor detailed documentation, visit laventh.com.\n";
 }
 
@@ -46,7 +47,7 @@ void print_documentation()
 void print_startup_message()
 {
 	std::cout<<LV::Constants::program_name<<" "<<LV::Constants::program_version
-		<<"\nCopyright 2020 Myles Trevino"
+		<<"\nCopyright Myles Trevino"
 		<<"\nlaventh.com"
 
 		<<"\n\nLicensed under the Apache License, Version 2.0"
@@ -73,62 +74,80 @@ void validate_name(const std::string& name)
 
 int main(int arguments_count, const char* arguments[])
 {
-	// Initialize.
-	LV::Utilities::platform_initialization(arguments[0]);
-	curl_global_init(CURL_GLOBAL_ALL);
-	print_startup_message();
-
-	while(true)
+	try
 	{
-		try
+		// Initialize.
+		LV::Utilities::platform_initialization(arguments[0]);
+		curl_global_init(CURL_GLOBAL_ALL);
+		print_startup_message();
+
+		// Check for the OpenTopography API key.
+		const int api_key_length{32};
+		std::string api_key;
+		std::ifstream file{LV::Constants::resources_directory+"/OpenTopography API Key.txt"};
+		file>>api_key;
+
+		if(api_key.size() != api_key_length) throw std::runtime_error{"Please enter your "
+			"OpenTopography API key into \"OpenTopography API Key.txt\" in the \"Resources\" "
+			"folder next to the executable. To get an API key, go to: "
+			"https://portal.opentopography.org/myopentopo."};
+
+		// Main loop.
+		while(true)
 		{
-			// Prompt for input.
-			std::cout<<"\n> ";
-			std::string input;
-			std::getline(std::cin, input);
-
-			// Get the tokens and command name.
-			std::vector<std::string> tokens{LV::Utilities::split(input)};
-			if(tokens.empty()) throw std::runtime_error{"No command entered."};
-
-			std::string command_name{tokens[0]};
-			tokens.erase(tokens.begin());
-
-			// Parse and execute the command.
-			if(command_name == "generate")
+			try
 			{
-				validate_command_parameters(command_name, 6, tokens.size());
-				validate_name(tokens[0]);
-				LV::Frustum::generate(tokens[0], tokens[1], std::stof(tokens[2]),
-					std::stof(tokens[3]), std::stof(tokens[4]), std::stof(tokens[5]));
-			}
+				// Prompt for input.
+				std::cout<<"\n> ";
+				std::string input;
+				std::getline(std::cin, input);
 
-			else if(command_name == "view")
-			{
-				validate_command_parameters(command_name, 1, tokens.size());
-				validate_name(tokens[0]);
-				LV::Viewer::view(tokens[0]);
-			}
+				// Get the tokens and command name.
+				std::vector<std::string> tokens{LV::Utilities::split(input)};
+				if(tokens.empty()) throw std::runtime_error{"No command entered."};
 
-			else if(command_name == "export")
-			{
-				validate_command_parameters(command_name, 3, tokens.size());
-				validate_name(tokens[0]);
-				LV::Exporter::export_frustum(tokens[0], tokens[1], tokens[2]);
-			}
+				std::string command_name{tokens[0]};
+				tokens.erase(tokens.begin());
 
-			else if(command_name == "exit")
-			{
-				std::cout<<"Exiting...\n";	
-				break;
-			}
+				// Parse and execute the command.
+				if(command_name == "generate")
+				{
+					validate_command_parameters(command_name, 6, tokens.size());
+					validate_name(tokens[0]);
+					LV::Frustum::generate(tokens[0], tokens[1], std::stof(tokens[2]),
+						std::stof(tokens[3]), std::stof(tokens[4]), std::stof(tokens[5]),
+						api_key);
+				}
 
-			else if(command_name == "help") print_documentation();
-			else throw std::runtime_error{"Unrecognized command."};
+				else if(command_name == "view")
+				{
+					validate_command_parameters(command_name, 1, tokens.size());
+					validate_name(tokens[0]);
+					LV::Viewer::view(tokens[0]);
+				}
+
+				else if(command_name == "export")
+				{
+					validate_command_parameters(command_name, 3, tokens.size());
+					validate_name(tokens[0]);
+					LV::Exporter::export_frustum(tokens[0], tokens[1], tokens[2]);
+				}
+
+				else if(command_name == "exit")
+				{
+					std::cout<<"Exiting...\n";
+					break;
+				}
+
+				else if(command_name == "help") print_documentation();
+				else throw std::runtime_error{"Unrecognized command."};
+			}
+			catch(std::exception& error){ std::cout<<"Error: "<<error.what()<<'\n'; }
+			catch(...){ std::cout<<"Error: Unhandled exception.\n"; }
 		}
-		catch(std::exception& error){ std::cout<<"Error: "<<error.what()<<'\n'; }
-		catch(...){ std::cout<<"Error: Unhandled exception.\n"; }
 	}
+	catch(std::exception& error){ std::cout<<"\nInitialization Error: "<<error.what()<<'\n'; }
+	catch(...){ std::cout<<"\nInitialization Error: Unhandled exception.\n"; }
 
 	// Destroy.
 	curl_global_cleanup();

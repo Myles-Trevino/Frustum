@@ -1,5 +1,5 @@
 /*
-	Copyright 2020 Myles Trevino
+	Copyright Myles Trevino
 	Licensed under the Apache License, Version 2.0
 	https://www.apache.org/licenses/LICENSE-2.0
 */
@@ -17,6 +17,7 @@
 #include <glbinding/gl33core/gl.h>
 #include <globjects/VertexAttributeBinding.h>
 #include <zstd/zstd.h>
+#include <algorithm>
 
 #include "Constants.hpp"
 
@@ -64,7 +65,7 @@ void LV::Utilities::platform_initialization(const std::string& path)
 	HWND console_handle{GetConsoleWindow()};
 	set_icon(module_handle, console_handle, ICON_SMALL, 32);
 	set_icon(module_handle, console_handle, ICON_BIG, 64);
-	
+
 	#elif __APPLE__
 	// Set the working directory.
 	std::string directory{path.substr(0, path.find_last_of('/'))};
@@ -196,6 +197,13 @@ std::vector<std::string> LV::Utilities::split(const std::string& string)
 {
 	std::istringstream stream(string);
 
-	return {std::istream_iterator<std::string>(stream), 
+	return {std::istream_iterator<std::string>(stream),
 		std::istream_iterator<std::string>()};
+}
+
+
+std::string LV::Utilities::to_uppercase(std::string string)
+{
+	std::transform(string.begin(), string.end(), string.begin(), toupper);
+	return string;
 }
