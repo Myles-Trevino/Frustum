@@ -21,9 +21,10 @@ void print_documentation()
 {
 	std::cout<<"\nTo generate a Frustum, enter: 'generate <name> <terrain dataset> <top> "
 		"<left> <bottom> <right>'. The name must contain only alphanumeric characters "
-		"and dashes. The terrain dataset can be either 'srtmgl1' or 'aw3d30'. For example: "
-		"'generate st-gallen srtmgl1 47.327618 9.295821 47.126480 9.621767'. Generated "
-		"Frustums will be saved within the 'Frustums' folder."
+		"and dashes. Supported global datasets are: 'srtmgl1' or 'aw3d30'. Supported USGS "
+		"datasets are: 'usgs30m', 'usgs10m', and 'usgs1m'. For example: 'generate st-gallen "
+		"srtmgl1 47.327618 9.295821 47.126480 9.621767'. Generated Frustums will be saved "
+		"within the 'Frustums' folder."
 
 		<<"\n\nTo view a generated Frustum, enter: 'view <name>'. For example: 'view "
 		"st-gallen'. In the Viewer, navigate using the 'W', 'A', 'S', and 'D' keys and the  "
@@ -74,14 +75,14 @@ void validate_name(const std::string& name)
 
 int main(int arguments_count, const char* arguments[])
 {
-    std::string api_key;
-    std::string input;
-    
+	std::string api_key;
+	std::string input;
+	
 	try
 	{
 		// Initialize.
-        print_startup_message();
-        
+		print_startup_message();
+		
 		LV::Utilities::platform_initialization(arguments[0]);
 		curl_global_init(CURL_GLOBAL_ALL);
 
@@ -91,71 +92,71 @@ int main(int arguments_count, const char* arguments[])
 		file>>api_key;
 
 		if(api_key.size() != api_key_length)
-        {
-            std::cout<<"\nPlease enter your OpenTopography API key into \"OpenTopography "
-                "API Key.txt\" in the \"Resources\" folder next to the executable. To get "
-                "an API key, go to: https://portal.opentopography.org/myopentopo.\n\n"
-                "Press enter to exit.";
-        
-            std::getline(std::cin, input);
-            std::exit(EXIT_FAILURE);
-        }
-    }
-    catch(std::exception& error){ std::cout<<"\nInitialization Error: "<<error.what()<<'\n'; }
-    catch(...){ std::cout<<"\nInitialization Error: Unhandled exception.\n"; }
+		{
+			std::cout<<"\nPlease enter your OpenTopography API key into \"OpenTopography "
+				"API Key.txt\" in the \"Resources\" folder next to the executable. To get "
+				"an API key, go to: https://portal.opentopography.org/myopentopo.\n\n"
+				"Press enter to exit.";
+		
+			std::getline(std::cin, input);
+			std::exit(EXIT_FAILURE);
+		}
+	}
+	catch(std::exception& error){ std::cout<<"\nInitialization Error: "<<error.what()<<'\n'; }
+	catch(...){ std::cout<<"\nInitialization Error: Unhandled exception.\n"; }
 
-    // Main loop.
-    while(true)
-    {
-        try
-        {
-            // Prompt for input.
-            std::cout<<"\n> ";
-            std::getline(std::cin, input);
+	// Main loop.
+	while(true)
+	{
+		try
+		{
+			// Prompt for input.
+			std::cout<<"\n> ";
+			std::getline(std::cin, input);
 
-            // Get the tokens and command name.
-            std::vector<std::string> tokens{LV::Utilities::split(input)};
-            if(tokens.empty()) throw std::runtime_error{"No command entered."};
+			// Get the tokens and command name.
+			std::vector<std::string> tokens{LV::Utilities::split(input)};
+			if(tokens.empty()) throw std::runtime_error{"No command entered."};
 
-            std::string command_name{tokens[0]};
-            tokens.erase(tokens.begin());
+			std::string command_name{tokens[0]};
+			tokens.erase(tokens.begin());
 
-            // Parse and execute the command.
-            if(command_name == "generate")
-            {
-                validate_command_parameters(command_name, 6, tokens.size());
-                validate_name(tokens[0]);
-                LV::Frustum::generate(tokens[0], tokens[1], std::stof(tokens[2]),
-                    std::stof(tokens[3]), std::stof(tokens[4]), std::stof(tokens[5]),
-                    api_key);
-            }
+			// Parse and execute the command.
+			if(command_name == "generate")
+			{
+				validate_command_parameters(command_name, 6, tokens.size());
+				validate_name(tokens[0]);
+				LV::Frustum::generate(tokens[0], tokens[1], std::stof(tokens[2]),
+					std::stof(tokens[3]), std::stof(tokens[4]), std::stof(tokens[5]),
+					api_key);
+			}
 
-            else if(command_name == "view")
-            {
-                validate_command_parameters(command_name, 1, tokens.size());
-                validate_name(tokens[0]);
-                LV::Viewer::view(tokens[0]);
-            }
+			else if(command_name == "view")
+			{
+				validate_command_parameters(command_name, 1, tokens.size());
+				validate_name(tokens[0]);
+				LV::Viewer::view(tokens[0]);
+			}
 
-            else if(command_name == "export")
-            {
-                validate_command_parameters(command_name, 3, tokens.size());
-                validate_name(tokens[0]);
-                LV::Exporter::export_frustum(tokens[0], tokens[1], tokens[2]);
-            }
+			else if(command_name == "export")
+			{
+				validate_command_parameters(command_name, 3, tokens.size());
+				validate_name(tokens[0]);
+				LV::Exporter::export_frustum(tokens[0], tokens[1], tokens[2]);
+			}
 
-            else if(command_name == "exit")
-            {
-                std::cout<<"Exiting...\n";
-                break;
-            }
+			else if(command_name == "exit")
+			{
+				std::cout<<"Exiting...\n";
+				break;
+			}
 
-            else if(command_name == "help") print_documentation();
-            else throw std::runtime_error{"Unrecognized command."};
-        }
-        catch(std::exception& error){ std::cout<<"Error: "<<error.what()<<'\n'; }
-        catch(...){ std::cout<<"Error: Unhandled exception.\n"; }
-    }
+			else if(command_name == "help") print_documentation();
+			else throw std::runtime_error{"Unrecognized command."};
+		}
+		catch(std::exception& error){ std::cout<<"Error: "<<error.what()<<'\n'; }
+		catch(...){ std::cout<<"Error: Unhandled exception.\n"; }
+	}
 
 	// Destroy.
 	curl_global_cleanup();

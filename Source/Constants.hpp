@@ -9,14 +9,17 @@
 
 #include <string>
 #include <vector>
+#include <set>
+#include <string_view>
 #include <glm/glm.hpp>
+#include <boost/algorithm/string.hpp>
 
 
 namespace LV::Constants
 {
 	// General.
 	const std::string program_name{"Laventh Frustum"};
-	const std::string program_version{"2022-1-21"};
+	const std::string program_version{"2024-6-1"};
 	const std::string resources_directory{"Resources"};
 	constexpr bool opengl_logging{false};
 	constexpr bool curl_verbose{false};
@@ -26,7 +29,9 @@ namespace LV::Constants
 	const std::string metadata_file_name{"metadata.lfm"};
 	const std::string terrain_file_name{"terrain.lft"};
 	const std::string buildings_file_name{"buildings.lfb"};
-	const std::vector<std::string> supported_datasets{"aw3d30", "srtmgl1"};
+	static auto case_insensitive_string_comparitor{[](std::string_view const& a, std::string_view const& b){ return boost::ilexicographical_compare(a, b); }};
+	const std::set<std::string, decltype(case_insensitive_string_comparitor)> supported_global_datasets{"AW3D30", "SRTMGL1"};
+	const std::set<std::string, decltype(case_insensitive_string_comparitor)> supported_usgs_datasets{"USGS30m", "USGS10m", "USGS1m"};
 	constexpr float meters_per_frustum_base_unit{30};
 	constexpr float terrain_normal_smoothing{1.f};
 	constexpr float default_building_height{20.f};

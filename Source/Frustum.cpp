@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <set>
 #include <filesystem>
 #include <glm/gtc/reciprocal.hpp>
 #include <glm/gtx/transform.hpp>
@@ -43,6 +44,7 @@ namespace
 
 	Bounds bounds;
 	glm::ivec2 size;
+	double cell_size;
 	glm::fmat4 center_matrix;
 
 	std::vector<std::vector<float>> terrain_data;
@@ -86,22 +88,26 @@ namespace
 		indicies->emplace_back(top_left);
 	}
 
-
 	void retrieve_terrain_data(const std::string& api_key)
 	{
 		std::cout<<"Retrieving the topography data...\n";
 
 		// Validate the dataset.
-		if(!LV::Utilities::is_supported(dataset, LV::Constants::supported_datasets))
-			throw std::runtime_error{"Unrecognized dataset."};
+		
+		const std::set<std::string>::iterator usgs_iterator{LV::Constants::supported_usgs_datasets.find(dataset)};
+		const std::set<std::string>::iterator global_iterator{LV::Constants::supported_global_datasets.find(dataset)};
+		const bool is_usgs{usgs_iterator != LV::Constants::supported_usgs_datasets.end()};
+		const bool is_global{global_iterator != LV::Constants::supported_global_datasets.end()};
+		if(!is_usgs && !is_global) throw std::runtime_error{"Unrecognized dataset."};
+		const std::string matched_dataset{is_usgs ? *usgs_iterator : *global_iterator};
 
 		// Make the request (OpenTopography API).
 		std::stringstream coordinates;
 		coordinates<<"&south="<<bounds.bottom<<"&north="<<bounds.top
 			<<"&west="<<bounds.left<<"&east="<<bounds.right;
 
-		std::string request{"https://portal.opentopography.org/API/globaldem?demtype="+
-			LV::Utilities::to_uppercase(dataset)+coordinates.str()+
+		std::string request{"https://portal.opentopography.org/API/"+std::string(is_usgs ? "usgsdem" : "globaldem")+
+			std::string(is_usgs ? "?datasetName=" : "?demtype=")+matched_dataset+coordinates.str()+
 			"&outputFormat=AAIGrid&API_Key="+api_key};
 		std::string response{LV::Request::request(request)};
 		std::stringstream response_stream{response};
@@ -109,18 +115,35 @@ namespace
 		if(response.find("Error") != std::string::npos) throw std::runtime_error{
 			"Failed to retrieve the topography data. Response: \""+response+"\"."};
 
-		// Get the number of rows and columns of the Arc ASCII dataset.
+		// Parse Arc ASCII dataset header.
 		std::cout<<"Parsing the topography data...\n";
-		LV::Utilities::ignore_until(&response_stream, ' ');
-		response_stream>>size.x;
-		LV::Utilities::ignore_until(&response_stream, ' ');
-		response_stream>>size.y;
-
-		size.y -= 1; // The last row of AW3D30 can be incorrect, so ignore it.
-
-		// Ignore the rest of the header.
+		const std::set<std::string> header_keys{"ncols", "nrows", "xllcorner", "yllcorner", "cellsize", "NODATA_value"};
 		std::string line;
-		for(int index{}; index < 5; ++index) std::getline(response_stream, line);
+		bool is_header{true};
+
+		while(is_header)
+		{
+			std::getline(response_stream, line);
+
+			is_header = false;
+			for(const std::string& key : header_keys)
+				if(line.find(key) != std::string::npos)
+				{
+					size_t last_space{line.find_last_of(" ")};
+					std::string value{line.substr(last_space+1)};
+
+					if(key == "ncols") size.x = stof(value);
+					else if(key == "nrows") size.y = stof(value);
+					else if(key == "cellsize") cell_size = stod(value);
+
+					is_header = true;
+					break;
+				}
+		}
+
+		// Convert header data.
+		cell_size = 0.0003/cell_size;
+		size.y -= 1; // The last row of AW3D30 can be incorrect, so ignore it.
 
 		// Parse the grid.
 		terrain_data.clear();
@@ -128,23 +151,25 @@ namespace
 		for(int z{}; z < size.y; ++z)
 		{
 			terrain_data.emplace_back();
-			std::getline(response_stream, line);
-			std::stringstream line_stream{line};
+			std::vector<std::string> tokens;
+			boost::split(tokens, line, boost::is_any_of(" "));
+			tokens.erase(tokens.begin());
 
-			for(int x{}; x < size.x; ++x)
+			for(const std::string& token : tokens)
 			{
-				int y;
-				line_stream>>y;
+				const double value{std::stof(token)};
 				float elevation;
 
-				if(y <= -9999) elevation = (x == 0) ? 0 : terrain_data.back().back();
-				else elevation = y/LV::Constants::meters_per_frustum_base_unit;
+				if(value <= -9999) elevation = terrain_data.back().back();
+				else elevation = (value*cell_size)/LV::Constants::meters_per_frustum_base_unit;
 
 				terrain_data.back().emplace_back(elevation);
 			}
 
 			if(terrain_data.back().size() != size.x)
 				throw std::runtime_error{"Failed to parse the topography data."};
+
+			std::getline(response_stream, line);
 		}
 
 		if(terrain_data.size() != size.y)
